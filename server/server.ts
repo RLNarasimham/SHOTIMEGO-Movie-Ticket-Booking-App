@@ -1125,7 +1125,7 @@ app.get("/health", (req: Request, res: Response) => {
   res.status(200).json(healthData);
 });
 
-// 404 handler - FIXED: Use proper wildcard route syntax
+// 404 handler (correct wildcard syntax)
 app.use("*", (req: Request, res: Response) => {
   res.status(404).json({
     success: false,
