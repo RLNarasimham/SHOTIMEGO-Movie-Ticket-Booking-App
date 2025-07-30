@@ -881,6 +881,42 @@ const SeatBooking: React.FC = () => {
     }
   };
 
+  const showTime = showTimes.find((st) => st.id === showTimeId);
+
+  // Defensive render checks — INSERT HERE!
+  if (loadingMovie) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-gray-600 dark:text-gray-300 text-lg font-medium">
+          Loading event details...
+        </div>
+      </div>
+    );
+  }
+
+  if (!movie) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-red-600 dark:text-red-400 text-lg font-medium">
+          Event not found.
+        </div>
+      </div>
+    );
+  }
+
+  if (!showTime) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-red-600 dark:text-red-400 text-lg font-medium">
+          Showtime Not Found.
+        </div>
+      </div>
+    );
+  }
+
+  // Your existing main return follows
+  return <div className="min-h-screen bg-gray-50 dark:bg-gray-900">...</div>;
+
   // ...Your full UI rendering block here (unchanged)...
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
