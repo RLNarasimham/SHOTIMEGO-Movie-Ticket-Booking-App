@@ -4,17 +4,14 @@ import { ArrowLeft, CreditCard, MapPin, Clock } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { Seat, Movie, ShowTime, TmdbMovieDetail } from "../types";
 import { db } from "../config/firebase";
-import {
-  doc,
-  setDoc,
-  onSnapshot,
-} from "firebase/firestore";
+import { doc, setDoc, onSnapshot } from "firebase/firestore";
+
+const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 const SeatBooking: React.FC = () => {
   const params = useParams();
   let { type, id, showTimeId } = params;
 
-  
   if (!type) {
     const match = window.location.pathname.match(/^\/booking\/([^/]+)/);
     if (match) {
@@ -34,7 +31,6 @@ const SeatBooking: React.FC = () => {
   const [loadingSeats, setLoadingSeats] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  
   useEffect(() => {
     if (!id) return;
 
@@ -46,47 +42,59 @@ const SeatBooking: React.FC = () => {
         let data: any;
 
         if (type === "movie") {
-          
           const res = await fetch(
-            `https://api.themoviedb.org/3/movie/${id}?api_key=${import.meta.env.VITE_TMDB_API_KEY}&language=en-US`
+            `https://api.themoviedb.org/3/movie/${id}?api_key=${
+              import.meta.env.VITE_TMDB_API_KEY
+            }&language=en-US`
           );
           if (!res.ok) throw new Error("Movie not found");
           data = await res.json();
 
-          
           const creditsRes = await fetch(
-            `https://api.themoviedb.org/3/movie/${id}/credits?api_key=${import.meta.env.VITE_TMDB_API_KEY}`
+            `https://api.themoviedb.org/3/movie/${id}/credits?api_key=${
+              import.meta.env.VITE_TMDB_API_KEY
+            }`
           );
           const credits = await creditsRes.json();
-          const directorMember = credits.crew.find((m: any) => m.job === "Director");
+          const directorMember = credits.crew.find(
+            (m: any) => m.job === "Director"
+          );
           data.director = directorMember?.name || "";
           data.cast = credits.cast.slice(0, 5).map((m: any) => m.name);
-        }
-        else if (type === "sports") {
-          
-          const res = await fetch(`http://localhost:5000/api/sports/${id}`);
+        } else if (type === "sports") {
+          const res = await fetch(`${backendURL}/api/sports/${id}`);
           if (!res.ok) throw new Error("Sport event not found");
           data = await res.json();
           data.director = "";
           data.cast = [];
-        }
-        else if (type === "concert") {
-          const res = await fetch(`http://localhost:5000/api/concerts/${id}`);
+        } else if (type === "concert") {
+          const res = await fetch(`${backendURL}/api/concerts/${id}`);
           if (!res.ok) throw new Error("Concert not found");
           data = await res.json();
           data.director = "";
           data.cast = [];
-        }
-        else if (type === "theatre") {
-          
-          const res = await fetch(`http://localhost:5000/api/theatres-arts/${id}`);
+        } else if (type === "theatre") {
+          const res = await fetch(`${backendURL}/api/theatre-arts/${id}`);
           if (!res.ok) throw new Error("Theatre/Art event not found");
           data = await res.json();
 
-          
           const mockShowTimes: ShowTime[] = [
-            { id: "st1", time: "7:00 PM", date: data.date || "2025-09-05", theater: data.location || "Grand Theatre", screen: "Main Stage", price: 350 },
-            { id: "st2", time: "9:00 PM", date: data.date || "2025-09-05", theater: data.location || "Grand Theatre", screen: "Main Stage", price: 350 },
+            {
+              id: "st1",
+              time: "7:00 PM",
+              date: data.date || "2025-09-05",
+              theater: data.location || "Grand Theatre",
+              screen: "Main Stage",
+              price: 350,
+            },
+            {
+              id: "st2",
+              time: "9:00 PM",
+              date: data.date || "2025-09-05",
+              theater: data.location || "Grand Theatre",
+              screen: "Main Stage",
+              price: 350,
+            },
           ];
 
           setMovie({
@@ -106,22 +114,47 @@ const SeatBooking: React.FC = () => {
           setShowTimes(mockShowTimes);
           setLoadingMovie(false);
           return;
-        }
-        else {
+        } else {
           throw new Error("Invalid type");
         }
 
         console.log("🎬 load() got data:", data);
 
-        
         const mockShowTimes: ShowTime[] = [
-          { id: "st1", time: "10:00 AM", date: "2025-07-22", theater: "PVR City Mall", screen: "Screen 1", price: 250 },
-          { id: "st2", time: "1:00 PM", date: "2025-07-22", theater: "PVR City Mall", screen: "Screen 2", price: 250 },
-          { id: "st3", time: "6:00 PM", date: "2025-07-22", theater: "PVR City Mall", screen: "Screen 3", price: 300 },
-          { id: "st4", time: "9:00 PM", date: "2025-07-22", theater: "INOX GVK Mall", screen: "Screen 1", price: 350 },
+          {
+            id: "st1",
+            time: "10:00 AM",
+            date: "2025-07-22",
+            theater: "PVR City Mall",
+            screen: "Screen 1",
+            price: 250,
+          },
+          {
+            id: "st2",
+            time: "1:00 PM",
+            date: "2025-07-22",
+            theater: "PVR City Mall",
+            screen: "Screen 2",
+            price: 250,
+          },
+          {
+            id: "st3",
+            time: "6:00 PM",
+            date: "2025-07-22",
+            theater: "PVR City Mall",
+            screen: "Screen 3",
+            price: 300,
+          },
+          {
+            id: "st4",
+            time: "9:00 PM",
+            date: "2025-07-22",
+            theater: "INOX GVK Mall",
+            screen: "Screen 1",
+            price: 350,
+          },
         ];
 
-        
         setMovie({
           id: data.id != null ? String(data.id) : "",
           title: data.title || data.name || "",
@@ -152,10 +185,8 @@ const SeatBooking: React.FC = () => {
     load();
   }, [type, id]);
 
-  
   const showTime = showTimes.find((st) => st.id === showTimeId);
 
-  
   useEffect(() => {
     console.log("id:", id, "showTimeId:", showTimeId, "showTime:", showTime);
 
@@ -170,7 +201,6 @@ const SeatBooking: React.FC = () => {
         bookedSeats = bookingSnap.data().bookedSeats || [];
       }
 
-      
       const rows = ["A", "B", "C", "D", "E", "F", "G", "H"];
       const seatLayout: Seat[] = rows.flatMap((row) => {
         const seatsPerRow = row <= "C" ? 8 : row <= "F" ? 10 : 12;
@@ -181,8 +211,8 @@ const SeatBooking: React.FC = () => {
           seatType === "vip"
             ? basePrice * 1.5
             : seatType === "premium"
-              ? basePrice * 1.2
-              : basePrice;
+            ? basePrice * 1.2
+            : basePrice;
 
         return Array.from({ length: seatsPerRow }, (_, i) => {
           const id = `${row}${i + 1}`;
@@ -227,9 +257,8 @@ const SeatBooking: React.FC = () => {
     if (selectedSeats.length === 0 || !currentUser) return;
 
     try {
-      
       const bookingId = `booking_${currentUser.uid}_${Date.now()}`;
-      
+
       const pendingBookingRef = doc(db, "pendingBookings", bookingId);
 
       const bookingData = {
@@ -253,13 +282,11 @@ const SeatBooking: React.FC = () => {
         }),
         status: "pending",
         createdAt: new Date(),
-        expiresAt: new Date(Date.now() + 15 * 60 * 1000), 
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000),
       };
 
-      
       await setDoc(pendingBookingRef, bookingData);
 
-      
       navigate(`/payment/${bookingId}`);
     } catch (error) {
       console.error("Failed to create booking:", error);
@@ -267,7 +294,6 @@ const SeatBooking: React.FC = () => {
     }
   };
 
-  
   if (loadingMovie) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
@@ -287,7 +313,6 @@ const SeatBooking: React.FC = () => {
     );
   }
 
-  
   if (!movie || !showTime) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center px-4">
@@ -311,7 +336,6 @@ const SeatBooking: React.FC = () => {
     );
   }
 
-  
   if (loadingSeats) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
@@ -330,7 +354,6 @@ const SeatBooking: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      
       <div className="bg-white dark:bg-black shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <button
@@ -345,7 +368,6 @@ const SeatBooking: React.FC = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         <div className="flex flex-col lg:grid lg:grid-cols-3 lg:gap-8 gap-4 space-y-6 lg:space-y-0">
-          
           <div className="lg:col-span-2 order-2 lg:order-1">
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6">
               <div className="text-center mb-6 sm:mb-8">
@@ -370,13 +392,13 @@ const SeatBooking: React.FC = () => {
                 </div>
               )}
 
-              
               <div className="mb-6 sm:mb-8">
                 <div className="bg-gradient-to-r from-gray-300 to-gray-400 dark:from-gray-700 dark:to-gray-800 h-2 rounded-full mx-auto w-3/4 mb-2"></div>
-                <div className="text-center text-sm text-gray-600 dark:text-gray-300">SCREEN</div>
+                <div className="text-center text-sm text-gray-600 dark:text-gray-300">
+                  SCREEN
+                </div>
               </div>
 
-              
               <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8 overflow-x-auto">
                 <div className="min-w-max mx-auto">
                   {Object.entries(groupedSeats).map(([row, rowSeats]) => (
@@ -395,19 +417,21 @@ const SeatBooking: React.FC = () => {
                             disabled={seat.isBooked || !currentUser}
                             className={`
                               w-6 h-6 sm:w-8 sm:h-8 rounded-t-lg text-xs font-semibold transition-all duration-200 flex-shrink-0
-                              ${seat.isBooked
-                                ? "bg-gray-400 text-white cursor-not-allowed"
-                                : selectedSeats.includes(seat.id)
+                              ${
+                                seat.isBooked
+                                  ? "bg-gray-400 text-white cursor-not-allowed"
+                                  : selectedSeats.includes(seat.id)
                                   ? "bg-red-600 text-white transform scale-110 shadow-lg"
                                   : seat.type === "vip"
-                                    ? "bg-yellow-200 text-yellow-800 hover:bg-yellow-300"
-                                    : seat.type === "premium"
-                                      ? "bg-blue-200 text-blue-800 hover:bg-blue-300"
-                                      : "bg-green-200 text-green-800 hover:bg-green-300"
+                                  ? "bg-yellow-200 text-yellow-800 hover:bg-yellow-300"
+                                  : seat.type === "premium"
+                                  ? "bg-blue-200 text-blue-800 hover:bg-blue-300"
+                                  : "bg-green-200 text-green-800 hover:bg-green-300"
                               }
-                              ${!currentUser
-                                ? "opacity-50 cursor-not-allowed"
-                                : ""
+                              ${
+                                !currentUser
+                                  ? "opacity-50 cursor-not-allowed"
+                                  : ""
                               }
                             `}
                           >
@@ -420,7 +444,6 @@ const SeatBooking: React.FC = () => {
                 </div>
               </div>
 
-             
               <div className="grid grid-cols-2 sm:flex sm:items-center sm:justify-center gap-3 sm:gap-6 dark:text-white text-black text-xs sm:text-sm">
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 sm:w-4 sm:h-4 bg-green-200 rounded-t flex-shrink-0"></div>
@@ -428,11 +451,15 @@ const SeatBooking: React.FC = () => {
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 sm:w-4 sm:h-4 bg-blue-200 rounded-t flex-shrink-0"></div>
-                  <span className="truncate">Premium (₹{Math.round(showTime.price * 1.2)})</span>
+                  <span className="truncate">
+                    Premium (₹{Math.round(showTime.price * 1.2)})
+                  </span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 sm:w-4 sm:h-4 bg-yellow-200 rounded-t flex-shrink-0"></div>
-                  <span className="truncate">VIP (₹{Math.round(showTime.price * 1.5)})</span>
+                  <span className="truncate">
+                    VIP (₹{Math.round(showTime.price * 1.5)})
+                  </span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="w-3 h-3 sm:w-4 sm:h-4 bg-red-600 rounded-t flex-shrink-0"></div>
@@ -454,14 +481,20 @@ const SeatBooking: React.FC = () => {
 
               <div className="space-y-3 mb-6">
                 <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base break-words">{movie.title}</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">{movie.genre}</p>
+                  <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base break-words">
+                    {movie.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    {movie.genre}
+                  </p>
                 </div>
 
                 <div className="text-sm text-gray-600 dark:text-gray-300">
                   <div className="flex justify-between items-start">
                     <span className="flex-shrink-0">Theater:</span>
-                    <span className="text-right break-words ml-2">{showTime.theater}</span>
+                    <span className="text-right break-words ml-2">
+                      {showTime.theater}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span>Show Time:</span>
@@ -490,7 +523,9 @@ const SeatBooking: React.FC = () => {
                           <span className="break-words">
                             {seatId} ({seat?.type})
                           </span>
-                          <span className="flex-shrink-0 ml-2">₹{seat?.price}</span>
+                          <span className="flex-shrink-0 ml-2">
+                            ₹{seat?.price}
+                          </span>
                         </div>
                       );
                     })}
@@ -524,8 +559,14 @@ const SeatBooking: React.FC = () => {
                     {!currentUser
                       ? "Login to Book"
                       : selectedSeats.length === 0
-                        ? "Select Seats"
-                        : `Proceed to Payment ${selectedSeats.length > 0 ? `(${selectedSeats.length} ${selectedSeats.length === 1 ? 'seat' : 'seats'})` : ''}`}
+                      ? "Select Seats"
+                      : `Proceed to Payment ${
+                          selectedSeats.length > 0
+                            ? `(${selectedSeats.length} ${
+                                selectedSeats.length === 1 ? "seat" : "seats"
+                              })`
+                            : ""
+                        }`}
                   </span>
                 </button>
               </div>
