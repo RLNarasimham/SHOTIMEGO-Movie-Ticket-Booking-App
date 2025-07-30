@@ -638,6 +638,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import admin from "./utils/firebaseAdmin";
 import path from "path";
 import { networkInterfaces } from "os";
+import { Server } from "http";
 
 dotenv.config();
 
@@ -1159,7 +1160,6 @@ app.use((error: Error, req: Request, res: Response, _next: NextFunction) => {
   });
 });
 
-import { Server } from "http";
 let server: Server;
 
 const gracefulShutdown = (signal: string) => {
