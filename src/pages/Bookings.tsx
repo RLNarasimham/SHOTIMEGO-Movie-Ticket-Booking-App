@@ -36,6 +36,14 @@ const Bookings: React.FC = () => {
     fetchReceipts();
   }, [currentUser]);
 
+  // Place this anywhere above the Bookings component or above downloadReceipt
+  const getEventNameAndLabel = (receipt) => {
+    if (receipt.movieTitle) return ["Movie", receipt.movieTitle];
+    if (receipt.title) return ["Event", receipt.title];
+    if (receipt.name) return ["Event", receipt.name];
+    return ["Event", "N/A"];
+  };
+
   const downloadReceipt = async (receipt: Receipt) => {
     const doc = new jsPDF();
 
@@ -63,14 +71,18 @@ const Bookings: React.FC = () => {
     contentY += 10;
     doc.text(`Receipt ID: ${receipt.id}`, 15, contentY);
     contentY += 10;
-    doc.text(
-      `${(() => {
-        if (receipt.movieTitle) return "Movie";
-        return "Event";
-      })()}: ${receipt.movieTitle}`,
-      15,
-      contentY
-    );
+    // doc.text(
+    //   `${(() => {
+    //     if (receipt.movieTitle) return "Movie";
+    //     return "Event";
+    //   })()}: ${receipt.movieTitle}`,
+    //   15,
+    //   contentY
+    // );
+
+    const [label, eventName] = getEventNameAndLabel(receipt);
+    doc.text(`${label}: ${eventName}`, 15, contentY);
+
     contentY += 10;
     doc.text(`Show Time: ${receipt.showTime}`, 15, contentY);
     contentY += 10;
