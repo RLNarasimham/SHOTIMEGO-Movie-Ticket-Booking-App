@@ -38,9 +38,12 @@ const Bookings: React.FC = () => {
 
   // Place this anywhere above the Bookings component or above downloadReceipt
   const getEventNameAndLabel = (receipt) => {
+    // Movie case
     if (receipt.movieTitle) return ["Movie", receipt.movieTitle];
-    if (receipt.title) return ["Event", receipt.title];
+    // Concerts: field is "name"
     if (receipt.name) return ["Event", receipt.name];
+    // Sports & Theatre/Arts: field is "title"
+    if (receipt.title) return ["Event", receipt.title];
     return ["Event", "N/A"];
   };
 
