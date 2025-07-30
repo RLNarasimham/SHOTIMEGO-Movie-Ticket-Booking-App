@@ -636,7 +636,6 @@ import cors from "cors";
 import * as dotenv from "dotenv";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import admin from "./utils/firebaseAdmin";
-import path from "path";
 import { networkInterfaces } from "os";
 import { Server } from "http";
 
@@ -665,12 +664,17 @@ const corsOptions = {
     origin: string | undefined,
     callback: (err: Error | null, allow?: boolean) => void
   ) {
+    // Allow requests with no origin (like mobile apps, Postman, curl requests)
     if (!origin) return callback(null, true);
 
+    // In production, you should restrict this to your actual frontend domains
+    // For development and global testing, allowing all origins
     if (process.env.NODE_ENV === "production") {
+      // Add your production frontend URLs here
       const allowedOrigins = [
         "https://movie-ticket-frontend.onrender.com",
         "http://localhost:5173/",
+        // Add more allowed origins as needed
       ];
 
       if (allowedOrigins.includes(origin)) {
@@ -680,6 +684,7 @@ const corsOptions = {
       }
     }
 
+    // Allow all origins in development
     return callback(null, true);
   },
   credentials: true,
@@ -753,12 +758,14 @@ app.post(
       const { uid, email } = req.body;
       const decodedToken = req.user!;
 
+      // Verify token matches the provided user data
       if (decodedToken.uid !== uid || decodedToken.email !== email) {
         return res.status(403).json({ error: "Token mismatch" });
       }
 
       const userRecord = await admin.auth().getUser(decodedToken.uid);
 
+      // Check if email is verified
       if (!userRecord.emailVerified) {
         return res.status(403).json({
           error: "Email not verified",
@@ -1160,8 +1167,9 @@ app.use((error: Error, req: Request, res: Response, _next: NextFunction) => {
   });
 });
 
-let server: Server;
+const server: Server;
 
+// Graceful shutdown handlers
 const gracefulShutdown = (signal: string) => {
   console.log(`\n📡 Received ${signal}. Shutting down gracefully...`);
   if (server) {
@@ -1193,6 +1201,7 @@ server = app.listen(Number(port), host, () => {
   console.log(`🤖 Chat Endpoint: http://${host}:${port}/chat`);
   console.log("═══════════════════════════════════════════");
 
+  // Display network interfaces
   console.log("\n📡 Network Interfaces:");
   const nets = networkInterfaces();
   Object.keys(nets).forEach((name) => {
@@ -1208,6 +1217,7 @@ server = app.listen(Number(port), host, () => {
   );
 });
 
+// Handle server startup errors
 server.on("error", (error: NodeJS.ErrnoException) => {
   if (error.syscall !== "listen") {
     throw error;
