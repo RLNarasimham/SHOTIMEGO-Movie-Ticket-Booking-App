@@ -79,7 +79,7 @@ const SeatBooking: React.FC = () => {
         }
         else if (type === "theatre") {
           
-          const res = await fetch(`http://localhost:5000/api/theatre-arts/${id}`);
+          const res = await fetch(`http://localhost:5000/api/theatres-arts/${id}`);
           if (!res.ok) throw new Error("Theatre/Art event not found");
           data = await res.json();
 
