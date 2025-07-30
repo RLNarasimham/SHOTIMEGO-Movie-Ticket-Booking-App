@@ -36,18 +36,15 @@ function App() {
         setError(null);
 
         // Make sure we're using TMDB API
-        // const apiKey = import.meta.env.VITE_TMDB_API_KEY;
+        const apiKey = import.meta.env.VITE_TMDB_API_KEY;
 
-        // if (!apiKey) {
-        //   throw new Error("TMDB API key is not configured");
-        // }
+        if (!apiKey) {
+          throw new Error("TMDB API key is not configured");
+        }
 
-        // const response = await fetch(
-        //   `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=en-US&page=1`
-        // );
-
-        const backendUrl = import.meta.env.VITE_BACKEND_URL;
-        const response = await fetch(`${backendUrl}/api/movies/popular`);
+        const response = await fetch(
+          `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=en-US&page=1`
+        );
 
         if (!response.ok) {
           throw new Error(

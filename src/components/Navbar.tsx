@@ -180,13 +180,9 @@ const Navbar: React.FC = () => {
   useEffect(() => {
     const fetchMovies = async () => {
       try {
-        // const response = await fetch(
-        //   `https://api.themoviedb.org/3/movie/popular?api_key=4b450aa0778cebc4b83f126ec505068c&language=en-US&page=1`
-        // );
-
-        const backendUrl = import.meta.env.VITE_BACKEND_URL;
-        const response = await fetch(`${backendUrl}/api/movies/popular`);
-
+        const response = await fetch(
+          `https://api.themoviedb.org/3/movie/popular?api_key=4b450aa0778cebc4b83f126ec505068c&language=en-US&page=1`
+        );
         const data = await response.json();
         const formattedMovies: Movie[] = data.results.map(
           (movie: TmdbMovie) => ({

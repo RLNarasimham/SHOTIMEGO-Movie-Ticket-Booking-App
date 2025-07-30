@@ -17,31 +17,23 @@ const MovieDetail: React.FC = () => {
       try {
         setLoading(true);
 
-        // const res1 = await fetch(
-        //   `https://api.themoviedb.org/3/movie/${id}?api_key=${import.meta.env.VITE_TMDB_API_KEY
-        //   }&language=en-US`
-        // );
-        // const detail: TmdbMovieDetail = await res1.json();
-
-        // const res2 = await fetch(
-        //   `https://api.themoviedb.org/3/movie/${id}/credits?api_key=${import.meta.env.VITE_TMDB_API_KEY
-        //   }`
-        // );
-        const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
-        // Fetch movie details from backend
-        const res1 = await fetch(`${backendUrl}/api/movies/${id}`);
+        const res1 = await fetch(
+          `https://api.themoviedb.org/3/movie/${id}?api_key=${import.meta.env.VITE_TMDB_API_KEY
+          }&language=en-US`
+        );
         const detail: TmdbMovieDetail = await res1.json();
 
-        // Fetch credits from backend
-        const res2 = await fetch(`${backendUrl}/api/movies/${id}/credits`);
-
+        const res2 = await fetch(
+          `https://api.themoviedb.org/3/movie/${id}/credits?api_key=${import.meta.env.VITE_TMDB_API_KEY
+          }`
+        );
         const credits: TmdbCredits = await res2.json();
 
         const directorMember = credits.crew.find((m) => m.job === "Director");
         const director = directorMember ? directorMember.name : "";
         const cast = credits.cast.slice(0, 10).map((member) => member.name);
 
+        
         const showTimesData: ShowTime[] = [
           {
             id: "st1",
@@ -69,6 +61,7 @@ const MovieDetail: React.FC = () => {
           },
         ];
 
+        
         setMovie({
           id: detail.id.toString(),
           title: detail.title,
@@ -106,10 +99,7 @@ const MovieDetail: React.FC = () => {
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             Movie Not Found
           </h2>
-          <Link
-            to="/"
-            className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
-          >
+          <Link to="/" className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300">
             Return to Home
           </Link>
         </div>
@@ -119,6 +109,7 @@ const MovieDetail: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      
       <div className="bg-white dark:bg-black shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 dark:bg-black bg-white lg:px-8 py-4">
           <Link
@@ -131,6 +122,7 @@ const MovieDetail: React.FC = () => {
         </div>
       </div>
 
+      
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
           <div className="md:flex">
@@ -183,9 +175,7 @@ const MovieDetail: React.FC = () => {
                     </div>
                     <div>
                       <span className="font-medium">Genre:</span>
-                      <span className="ml-2 text-gray-600 dark:text-gray-300">
-                        {movie.genre}
-                      </span>
+                      <span className="ml-2 text-gray-600 dark:text-gray-300">{movie.genre}</span>
                     </div>
                     <div>
                       <span className="font-medium">Language:</span>
@@ -197,9 +187,7 @@ const MovieDetail: React.FC = () => {
                 </div>
 
                 <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
-                    Cast
-                  </h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Cast</h3>
                   <div className="flex flex-wrap gap-2">
                     {movie.cast.map((actor, index) => (
                       <span
@@ -216,6 +204,7 @@ const MovieDetail: React.FC = () => {
           </div>
         </div>
 
+        
         {movie.showTimes.length > 0 && (
           <div className="mt-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
@@ -254,9 +243,7 @@ const MovieDetail: React.FC = () => {
                         <div className="text-lg font-bold text-gray-900 dark:text-white">
                           ₹{showTime.price}
                         </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-300">
-                          per seat
-                        </div>
+                        <div className="text-sm text-gray-600 dark:text-gray-300">per seat</div>
                       </div>
 
                       {currentUser ? (
