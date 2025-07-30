@@ -602,6 +602,7 @@ import * as dotenv from "dotenv";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import admin from "./utils/firebaseAdmin";
 import { networkInterfaces } from "os";
+import fetch from "node-fetch";
 import { Server } from "http";
 
 dotenv.config();

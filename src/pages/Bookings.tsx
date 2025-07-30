@@ -36,7 +36,6 @@ const Bookings: React.FC = () => {
     fetchReceipts();
   }, [currentUser]);
 
-  // Place this anywhere above the Bookings component or above downloadReceipt
   const getEventNameAndLabel = (receipt) => {
     // Movie case
     if (receipt.movieTitle) return ["Movie", receipt.movieTitle];
@@ -74,14 +73,6 @@ const Bookings: React.FC = () => {
     contentY += 10;
     doc.text(`Receipt ID: ${receipt.id}`, 15, contentY);
     contentY += 10;
-    // doc.text(
-    //   `${(() => {
-    //     if (receipt.movieTitle) return "Movie";
-    //     return "Event";
-    //   })()}: ${receipt.movieTitle}`,
-    //   15,
-    //   contentY
-    // );
 
     const [label, eventName] = getEventNameAndLabel(receipt);
     doc.text(`${label}: ${eventName}`, 15, contentY);
