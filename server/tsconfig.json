@@ -1,0 +1,26 @@
+// {
+//   "compilerOptions": {
+//     "target": "es2020",                        // Use modern JavaScript features
+//     "module": "commonjs",                      // Node.js expects CommonJS modules
+//     "moduleResolution": "node",                // Required to find node_modules properly
+//     "outDir": "./dist",                        // Output folder for compiled .js files
+//     "rootDir": "./",                           // Root of source TypeScript files
+//     "esModuleInterop": true,                   // Allow default imports from CommonJS
+//     "forceConsistentCasingInFileNames": true,  // Casing errors during import
+//     "strict": true,                            // Enable all strict type-checking options
+//     "skipLibCheck": true                       // Speed up compilation by skipping type checks on libraries
+//   },
+//   "include": ["./**/*.ts"],                    // Include all TypeScript files
+//   "exclude": ["node_modules", "dist"]          // Exclude build output and deps
+// }
+
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "strict": true,
+    "outDir": "./dist"
+  },
+  "include": ["server.ts"]
+}
