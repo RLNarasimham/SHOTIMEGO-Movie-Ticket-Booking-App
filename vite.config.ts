@@ -7,6 +7,7 @@ export default defineConfig({
   build: {
     outDir: "build", // This changes output from 'dist' to 'build'
   },
+  base: "/",
   optimizeDeps: {
     exclude: ["lucide-react"],
   },
