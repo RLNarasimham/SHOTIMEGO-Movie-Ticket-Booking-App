@@ -1167,7 +1167,7 @@ app.use((error: Error, req: Request, res: Response, _next: NextFunction) => {
   });
 });
 
-const server: Server;
+let server: Server;
 
 // Graceful shutdown handlers
 const gracefulShutdown = (signal: string) => {
