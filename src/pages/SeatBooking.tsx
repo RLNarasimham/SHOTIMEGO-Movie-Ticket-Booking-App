@@ -6,8 +6,6 @@ import { Seat, Movie, ShowTime, TmdbMovieDetail } from "../types";
 import { db } from "../config/firebase";
 import { doc, setDoc, onSnapshot } from "firebase/firestore";
 
-const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
-
 const backendURL = import.meta.env.VITE_BACKEND_URL;
 
 const SeatBooking: React.FC = () => {
@@ -44,28 +42,25 @@ const SeatBooking: React.FC = () => {
         let data: any;
 
         if (type === "movie") {
-          if (!TMDB_API_KEY)
-            throw new Error("TMDB API key missing in environment variables");
-
-          // Fetch movie details
           const res = await fetch(
-            `https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_API_KEY}&language=en-US`
+            `https://api.themoviedb.org/3/movie/${id}?api_key=${
+              import.meta.env.VITE_TMDB_API_KEY
+            }&language=en-US`
           );
           if (!res.ok) throw new Error("Movie not found");
           data = await res.json();
 
-          // Fetch credits
           const creditsRes = await fetch(
-            `https://api.themoviedb.org/3/movie/${id}/credits?api_key=${TMDB_API_KEY}`
+            `https://api.themoviedb.org/3/movie/${id}/credits?api_key=${
+              import.meta.env.VITE_TMDB_API_KEY
+            }`
           );
-          if (!creditsRes.ok) throw new Error("Failed to fetch movie credits");
           const credits = await creditsRes.json();
-
           const directorMember = credits.crew.find(
             (m: any) => m.job === "Director"
           );
           data.director = directorMember?.name || "";
-          data.cast = credits.cast?.slice(0, 5).map((m: any) => m.name) || [];
+          data.cast = credits.cast.slice(0, 5).map((m: any) => m.name);
         } else if (type === "sports") {
           const res = await fetch(`${backendURL}/api/sports/${id}`);
           if (!res.ok) throw new Error("Sport event not found");
