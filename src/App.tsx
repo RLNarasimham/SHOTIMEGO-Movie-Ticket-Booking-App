@@ -34,10 +34,10 @@ function App() {
       try {
         setLoading(true);
         setError(null);
-        
+
         // Make sure we're using TMDB API
         const apiKey = import.meta.env.VITE_TMDB_API_KEY;
-        
+
         if (!apiKey) {
           throw new Error("TMDB API key is not configured");
         }
@@ -47,11 +47,13 @@ function App() {
         );
 
         if (!response.ok) {
-          throw new Error(`TMDB API error: ${response.status} ${response.statusText}`);
+          throw new Error(
+            `TMDB API error: ${response.status} ${response.statusText}`
+          );
         }
 
         const data = await response.json();
-        
+
         if (!data.results) {
           throw new Error("Invalid response format from TMDB API");
         }
@@ -81,67 +83,68 @@ function App() {
 
   return (
     <AuthProvider>
-      <Router>
-        <div className="mt-0">
-          <div className="min-h-screen bg-gray-50">
-            <Navbar />
-            <Routes>
-              <Route path="/" element={<Home movies={movies} loading={loading} error={error} />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/movie/:id" element={<MovieDetail />} />
-              <Route
-                path="/booking/:type/:id/:showTimeId"
-                element={
-                  <ProtectedRoute>
-                    <SeatBooking />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/concert/:id" element={<ConcertDetail />} />
-              <Route
-                path="/booking/theatre/:id/:showTimeId"
-                element={
-                  <ProtectedRoute>
-                    <SeatBooking />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/payment/:bookingId"
-                element={
-                  <ProtectedRoute>
-                    <Payment />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/help" element={<HelpCenter />} />
-              <Route
-                path="/bookings"
-                element={
-                  <ProtectedRoute>
-                    <Bookings />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/faq" element={<FAQs />} />
-              <Route path="/contact" element={<ContactUs />} />
-              <Route path="/concerts" element={<Concerts />} />
-              <Route path="/sports" element={<Sports />} />
-              <Route path="/theatresandarts" element={<TheatreAndArts />} />
-              <Route path="/offers" element={<OffersOnMovies />} />
-              <Route path="/now-showing" element={<NowShowing />} />
-              <Route path="/coming-soon" element={<ComingSoon />} />
-              <Route
-                path="/location-dropdown"
-                element={<LocationDropdownDemo />}
-              />
-            </Routes>
-            <Chatbot />
-            <Footer />
-          </div>
+      <div className="mt-0">
+        <div className="min-h-screen bg-gray-50">
+          <Navbar />
+          <Routes>
+            <Route
+              path="/"
+              element={<Home movies={movies} loading={loading} error={error} />}
+            />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/movie/:id" element={<MovieDetail />} />
+            <Route
+              path="/booking/:type/:id/:showTimeId"
+              element={
+                <ProtectedRoute>
+                  <SeatBooking />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/concert/:id" element={<ConcertDetail />} />
+            <Route
+              path="/booking/theatre/:id/:showTimeId"
+              element={
+                <ProtectedRoute>
+                  <SeatBooking />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/payment/:bookingId"
+              element={
+                <ProtectedRoute>
+                  <Payment />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/help" element={<HelpCenter />} />
+            <Route
+              path="/bookings"
+              element={
+                <ProtectedRoute>
+                  <Bookings />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/faq" element={<FAQs />} />
+            <Route path="/contact" element={<ContactUs />} />
+            <Route path="/concerts" element={<Concerts />} />
+            <Route path="/sports" element={<Sports />} />
+            <Route path="/theatresandarts" element={<TheatreAndArts />} />
+            <Route path="/offers" element={<OffersOnMovies />} />
+            <Route path="/now-showing" element={<NowShowing />} />
+            <Route path="/coming-soon" element={<ComingSoon />} />
+            <Route
+              path="/location-dropdown"
+              element={<LocationDropdownDemo />}
+            />
+          </Routes>
+          <Chatbot />
+          <Footer />
         </div>
-      </Router>
+      </div>
     </AuthProvider>
   );
 }
