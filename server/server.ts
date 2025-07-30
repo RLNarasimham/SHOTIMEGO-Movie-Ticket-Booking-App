@@ -1133,8 +1133,8 @@ app.get("/health", (req: Request, res: Response) => {
   res.status(200).json(healthData);
 });
 
-// 404 handler (correct wildcard syntax)
-app.use("*", (req: Request, res: Response) => {
+// 404 handler - FIXED: Changed from "*" to catch-all middleware
+app.use((req: Request, res: Response, next: NextFunction) => {
   res.status(404).json({
     success: false,
     error: "Endpoint not found",
