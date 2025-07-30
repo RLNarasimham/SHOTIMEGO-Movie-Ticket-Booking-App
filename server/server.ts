@@ -641,7 +641,6 @@ import { networkInterfaces } from "os";
 
 dotenv.config();
 
-// ✅ Validate required environment variables
 const REQUIRED_ENV_VARS = [
   "GEMINI_API_KEY",
   "FIREBASE_PROJECT_ID",
@@ -658,25 +657,19 @@ REQUIRED_ENV_VARS.forEach((key) => {
 
 const app = express();
 const port = process.env.PORT || 5000;
-const host = "0.0.0.0"; // Bind to all network interfaces for global access
+const host = "0.0.0.0";
 
-// Enhanced CORS configuration for global access
 const corsOptions = {
   origin: function (
     origin: string | undefined,
     callback: (err: Error | null, allow?: boolean) => void
   ) {
-    // Allow requests with no origin (like mobile apps, Postman, curl requests)
     if (!origin) return callback(null, true);
 
-    // In production, you should restrict this to your actual frontend domains
-    // For development and global testing, allowing all origins
     if (process.env.NODE_ENV === "production") {
-      // Add your production frontend URLs here
       const allowedOrigins = [
         "https://movie-ticket-frontend.onrender.com",
         "http://localhost:5173/",
-        // Add more allowed origins as needed
       ];
 
       if (allowedOrigins.includes(origin)) {
@@ -686,7 +679,6 @@ const corsOptions = {
       }
     }
 
-    // Allow all origins in development
     return callback(null, true);
   },
   credentials: true,
@@ -703,17 +695,13 @@ const corsOptions = {
   optionsSuccessStatus: 200,
 };
 
-// Middleware
 app.use(cors(corsOptions));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-// Trust proxy for accurate IP addresses when behind reverse proxy
 app.set("trust proxy", true);
 
-// Security and logging middleware - FIXED: Proper timestamp variable declaration
 app.use((req: Request, res: Response, next: NextFunction) => {
-  // Security headers
   res.setHeader("X-Content-Type-Options", "nosniff");
   res.setHeader("X-Frame-Options", "DENY");
   res.setHeader("X-XSS-Protection", "1; mode=block");
@@ -731,7 +719,6 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-// Auth middleware for token verification
 const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
 
@@ -751,14 +738,12 @@ const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-// Extend Request interface to include user
 declare module "express" {
   export interface Request {
     user?: admin.auth.DecodedIdToken;
   }
 }
 
-// Authentication Routes
 app.post(
   "/api/auth/login",
   verifyToken,
@@ -767,15 +752,12 @@ app.post(
       const { uid, email } = req.body;
       const decodedToken = req.user!;
 
-      // Verify token matches the provided user data
       if (decodedToken.uid !== uid || decodedToken.email !== email) {
         return res.status(403).json({ error: "Token mismatch" });
       }
 
-      // Get user record from Firebase Admin
       const userRecord = await admin.auth().getUser(decodedToken.uid);
 
-      // Check if email is verified
       if (!userRecord.emailVerified) {
         return res.status(403).json({
           error: "Email not verified",
@@ -816,7 +798,6 @@ app.post("/api/auth/sync", verifyToken, async (req: Request, res: Response) => {
   }
 });
 
-// Data arrays (unchanged from original)
 const concerts = [
   {
     id: "1",
@@ -906,7 +887,6 @@ const theatreAndArts = [
   },
 ];
 
-// Public API Routes (unchanged logic, added error handling)
 app.get("/api/concerts", (req: Request, res: Response) => {
   try {
     res.status(200).json({
@@ -995,7 +975,6 @@ app.get("/api/sports/:id", (req: Request, res: Response) => {
   }
 });
 
-// FIXED: Changed route path from /api/theatres-arts to /api/theatre-arts (singular)
 app.get("/api/theatre-arts", (req: Request, res: Response) => {
   try {
     res.status(200).json({
@@ -1013,7 +992,6 @@ app.get("/api/theatre-arts", (req: Request, res: Response) => {
   }
 });
 
-// FIXED: Changed route path from /api/theatres-arts/:id to /api/theatre-arts/:id (singular)
 app.get("/api/theatre-arts/:id", (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -1042,7 +1020,6 @@ app.get("/api/theatre-arts/:id", (req: Request, res: Response) => {
   }
 });
 
-// Initialize Gemini AI
 const API_KEY = process.env.GEMINI_API_KEY;
 if (!API_KEY) {
   console.error("❌ GEMINI_API_KEY is not set in environment variables");
@@ -1054,7 +1031,6 @@ if (!API_KEY) {
 
 const genAI = new GoogleGenerativeAI(API_KEY);
 
-// Chat endpoint
 app.post("/chat", async (req: Request, res: Response) => {
   const { message } = req.body;
 
@@ -1099,7 +1075,6 @@ Here is the latest user query:
   }
 });
 
-// Root endpoint
 app.get("/", (req: Request, res: Response) => {
   res.status(200).json({
     message: "🎬 SHOWTIMEGO API Server",
@@ -1130,7 +1105,6 @@ app.get("/", (req: Request, res: Response) => {
   });
 });
 
-// Health check endpoint
 app.get("/health", (req: Request, res: Response) => {
   const healthData = {
     status: "OK",
@@ -1173,7 +1147,6 @@ app.use("*", (req: Request, res: Response) => {
   });
 });
 
-// Global error handler
 app.use((error: Error, req: Request, res: Response, _next: NextFunction) => {
   console.error("❌ Unhandled error:", error);
   res.status(500).json({
@@ -1186,11 +1159,9 @@ app.use((error: Error, req: Request, res: Response, _next: NextFunction) => {
   });
 });
 
-// Declare server variable before using it
 import { Server } from "http";
 let server: Server;
 
-// Graceful shutdown handlers
 const gracefulShutdown = (signal: string) => {
   console.log(`\n📡 Received ${signal}. Shutting down gracefully...`);
   if (server) {
@@ -1199,7 +1170,6 @@ const gracefulShutdown = (signal: string) => {
       process.exit(0);
     });
 
-    // Force close after 30 seconds
     setTimeout(() => {
       console.error(
         "❌ Could not close connections in time, forcefully shutting down"
@@ -1214,7 +1184,6 @@ const gracefulShutdown = (signal: string) => {
 process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
 process.on("SIGINT", () => gracefulShutdown("SIGINT"));
 
-// Start the server
 server = app.listen(Number(port), host, () => {
   console.log("\n🚀 SHOWTIMEGO Server Started Successfully!");
   console.log("═══════════════════════════════════════════");
@@ -1224,7 +1193,6 @@ server = app.listen(Number(port), host, () => {
   console.log(`🤖 Chat Endpoint: http://${host}:${port}/chat`);
   console.log("═══════════════════════════════════════════");
 
-  // Display network interfaces
   console.log("\n📡 Network Interfaces:");
   const nets = networkInterfaces();
   Object.keys(nets).forEach((name) => {
@@ -1240,7 +1208,6 @@ server = app.listen(Number(port), host, () => {
   );
 });
 
-// Handle server startup errors
 server.on("error", (error: NodeJS.ErrnoException) => {
   if (error.syscall !== "listen") {
     throw error;
